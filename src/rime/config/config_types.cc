@@ -5,308 +5,387 @@
 // 2011-04-06 Zou Xu <zouivex@gmail.com>
 //
 #include <cstdlib>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
+// #include <boost/algorithm/string.hpp>
+// #include <boost/lexical_cast.hpp>
 #include <rime/config/config_data.h>
 #include <rime/config/config_types.h>
 
-namespace rime {
+#include <rime/rimePath.h>
+#include <cctype>
 
-// ConfigValue members
+namespace rime
+{
 
-ConfigValue::ConfigValue(bool value)
-    : ConfigItem(kScalar) {
-  SetBool(value);
-}
-
-ConfigValue::ConfigValue(int value)
-    : ConfigItem(kScalar) {
-  SetInt(value);
-}
-
-ConfigValue::ConfigValue(double value)
-    : ConfigItem(kScalar) {
-  SetDouble(value);
-}
-
-ConfigValue::ConfigValue(const char* value)
-    : ConfigItem(kScalar), value_(value) {
-}
-
-ConfigValue::ConfigValue(const string& value)
-    : ConfigItem(kScalar), value_(value) {
-}
-
-bool ConfigValue::GetBool(bool* value) const {
-  if (!value || value_.empty())
-    return false;
-  string bstr = value_;
-  boost::to_lower(bstr);
-  if ("true" == bstr) {
-    *value = true;
-    return true;
-  }
-  else if ("false" == bstr) {
-    *value = false;
-    return true;
-  }
-  else
-    return false;
-}
-
-bool ConfigValue::GetInt(int* value) const {
-  if (!value || value_.empty())
-    return false;
-  // try to parse hex number
-  if (boost::starts_with(value_, "0x")) {
-    char* p = NULL;
-    unsigned int hex = std::strtoul(value_.c_str(), &p, 16);
-    if (*p == '\0') {
-      *value = static_cast<int>(hex);
-      return true;
+    // 自定义字符串转换为小写
+    void to_lower(std::string &str)
+    {
+        std::transform(str.begin(), str.end(), str.begin(),
+                       [](unsigned char c)
+                       { return std::tolower(c); });
     }
-  }
-  // decimal
-  try {
-    *value = boost::lexical_cast<int>(value_);
-  }
-  catch (...) {
-    return false;
-  }
-  return true;
-}
 
-bool ConfigValue::GetDouble(double* value) const {
-  if (!value || value_.empty())
-    return false;
-  try {
-    *value = boost::lexical_cast<double>(value_);
-  }
-  catch (...) {
-    return false;
-  }
-  return true;
-}
+    // ConfigValue members
+    ConfigValue::ConfigValue(bool value)
+        : ConfigItem(kScalar)
+    {
+        SetBool(value);
+    }
 
-bool ConfigValue::GetString(string* value) const {
-  if (!value) return false;
-  *value = value_;
-  return true;
-}
+    ConfigValue::ConfigValue(int value)
+        : ConfigItem(kScalar)
+    {
+        SetInt(value);
+    }
 
-bool ConfigValue::SetBool(bool value) {
-  value_ = value ? "true" : "false";
-  return true;
-}
+    ConfigValue::ConfigValue(double value)
+        : ConfigItem(kScalar)
+    {
+        SetDouble(value);
+    }
 
-bool ConfigValue::SetInt(int value) {
-  value_ = boost::lexical_cast<string>(value);
-  return true;
-}
+    ConfigValue::ConfigValue(const char *value)
+        : ConfigItem(kScalar), value_(value)
+    {
+    }
 
-bool ConfigValue::SetDouble(double value) {
-  value_ = boost::lexical_cast<string>(value);
-  return true;
-}
+    ConfigValue::ConfigValue(const string &value)
+        : ConfigItem(kScalar), value_(value)
+    {
+    }
 
-bool ConfigValue::SetString(const char* value) {
-  value_ = value;
-  return true;
-}
+    bool ConfigValue::GetBool(bool *value) const
+    {
+        if (!value || value_.empty())
+            return false;
+        string bstr = value_;
+        // boost::to_lower(bstr);
+        to_lower(bstr);
+        if ("true" == bstr)
+        {
+            *value = true;
+            return true;
+        }
+        else if ("false" == bstr)
+        {
+            *value = false;
+            return true;
+        }
+        else
+            return false;
+    }
 
-bool ConfigValue::SetString(const string& value) {
-  value_ = value;
-  return true;
-}
+    bool ConfigValue::GetInt(int *value) const
+    {
+        if (!value || value_.empty())
+            return false;
+        // try to parse hex number
+        // if (boost::starts_with(value_, "0x"))
+        if (starts_with(value_, "0x"))
+        {
+            char *p = NULL;
+            unsigned int hex = std::strtoul(value_.c_str(), &p, 16);
+            if (*p == '\0')
+            {
+                *value = static_cast<int>(hex);
+                return true;
+            }
+        }
+        // decimal
+        try
+        {
+            // *value = boost::lexical_cast<int>(value_);
+            *value = stoi(value_);
+        }
+        catch (...)
+        {
+            return false;
+        }
+        return true;
+    }
 
-// ConfigList members
+    bool ConfigValue::GetDouble(double *value) const
+    {
+        if (!value || value_.empty())
+            return false;
+        try
+        {
+            // *value = boost::lexical_cast<double>(value_);
+            *value = stod(value_);
+        }
+        catch (...)
+        {
+            return false;
+        }
+        return true;
+    }
 
-an<ConfigItem> ConfigList::GetAt(size_t i) const {
-  if (i >= seq_.size())
-    return nullptr;
-  else
-    return seq_[i];
-}
+    bool ConfigValue::GetString(string *value) const
+    {
+        if (!value)
+            return false;
+        *value = value_;
+        return true;
+    }
 
-an<ConfigValue> ConfigList::GetValueAt(size_t i) const {
-  return As<ConfigValue>(GetAt(i));
-}
+    bool ConfigValue::SetBool(bool value)
+    {
+        value_ = value ? "true" : "false";
+        return true;
+    }
 
-bool ConfigList::SetAt(size_t i, an<ConfigItem> element) {
-  if (i >= seq_.size())
-    seq_.resize(i + 1);
-  seq_[i] = element;
-  return true;
-}
+    bool ConfigValue::SetInt(int value)
+    {
+        // value_ = boost::lexical_cast<string>(value);
+        value_ = std::to_string(value);
+        return true;
+    }
 
-bool ConfigList::Insert(size_t i, an<ConfigItem> element) {
-  if (i > seq_.size()) {
-    seq_.resize(i);
-  }
-  seq_.insert(seq_.begin() + i, element);
-  return true;
-}
+    bool ConfigValue::SetDouble(double value)
+    {
+        // value_ = boost::lexical_cast<string>(value);
+        value_ = std::to_string(value);
+        return true;
+    }
 
-bool ConfigList::Append(an<ConfigItem> element) {
-  seq_.push_back(element);
-  return true;
-}
+    bool ConfigValue::SetString(const char *value)
+    {
+        value_ = value;
+        return true;
+    }
 
-bool ConfigList::Resize(size_t size) {
-  seq_.resize(size);
-  return true;
-}
+    bool ConfigValue::SetString(const string &value)
+    {
+        value_ = value;
+        return true;
+    }
 
-bool ConfigList::Clear() {
-  seq_.clear();
-  return true;
-}
+    // ConfigList members
 
-size_t ConfigList::size() const {
-  return seq_.size();
-}
+    an<ConfigItem> ConfigList::GetAt(size_t i) const
+    {
+        if (i >= seq_.size())
+            return nullptr;
+        else
+            return seq_[i];
+    }
 
-ConfigList::Iterator ConfigList::begin() {
-  return seq_.begin();
-}
+    an<ConfigValue> ConfigList::GetValueAt(size_t i) const
+    {
+        return As<ConfigValue>(GetAt(i));
+    }
 
-ConfigList::Iterator ConfigList::end() {
-  return seq_.end();
-}
+    bool ConfigList::SetAt(size_t i, an<ConfigItem> element)
+    {
+        if (i >= seq_.size())
+            seq_.resize(i + 1);
+        seq_[i] = element;
+        return true;
+    }
 
-// ConfigMap members
+    bool ConfigList::Insert(size_t i, an<ConfigItem> element)
+    {
+        if (i > seq_.size())
+        {
+            seq_.resize(i);
+        }
+        seq_.insert(seq_.begin() + i, element);
+        return true;
+    }
 
-bool ConfigMap::HasKey(const string& key) const {
-  return bool(Get(key));
-}
+    bool ConfigList::Append(an<ConfigItem> element)
+    {
+        seq_.push_back(element);
+        return true;
+    }
 
-an<ConfigItem> ConfigMap::Get(const string& key) const {
-  auto it = map_.find(key);
-  if (it == map_.end())
-    return nullptr;
-  else
-    return it->second;
-}
+    bool ConfigList::Resize(size_t size)
+    {
+        seq_.resize(size);
+        return true;
+    }
 
-an<ConfigValue> ConfigMap::GetValue(const string& key) const {
-  return As<ConfigValue>(Get(key));
-}
+    bool ConfigList::Clear()
+    {
+        seq_.clear();
+        return true;
+    }
 
-bool ConfigMap::Set(const string& key, an<ConfigItem> element) {
-  map_[key] = element;
-  return true;
-}
+    size_t ConfigList::size() const
+    {
+        return seq_.size();
+    }
 
-bool ConfigMap::Clear() {
-  map_.clear();
-  return true;
-}
+    ConfigList::Iterator ConfigList::begin()
+    {
+        return seq_.begin();
+    }
 
-ConfigMap::Iterator ConfigMap::begin() {
-  return map_.begin();
-}
+    ConfigList::Iterator ConfigList::end()
+    {
+        return seq_.end();
+    }
 
-ConfigMap::Iterator ConfigMap::end() {
-  return map_.end();
-}
+    // ConfigMap members
 
-// ConfigItemRef members
+    bool ConfigMap::HasKey(const string &key) const
+    {
+        return bool(Get(key));
+    }
 
-bool ConfigItemRef::IsNull() const {
-  auto item = GetItem();
-  return !item || item->type() == ConfigItem::kNull;
-}
+    an<ConfigItem> ConfigMap::Get(const string &key) const
+    {
+        auto it = map_.find(key);
+        if (it == map_.end())
+            return nullptr;
+        else
+            return it->second;
+    }
 
-bool ConfigItemRef::IsValue() const {
-  auto item = GetItem();
-  return item && item->type() == ConfigItem::kScalar;
-}
+    an<ConfigValue> ConfigMap::GetValue(const string &key) const
+    {
+        return As<ConfigValue>(Get(key));
+    }
 
-bool ConfigItemRef::IsList() const {
-  auto item = GetItem();
-  return item && item->type() == ConfigItem::kList;
-}
+    bool ConfigMap::Set(const string &key, an<ConfigItem> element)
+    {
+        map_[key] = element;
+        return true;
+    }
 
-bool ConfigItemRef::IsMap() const {
-  auto item = GetItem();
-  return item && item->type() == ConfigItem::kMap;
-}
+    bool ConfigMap::Clear()
+    {
+        map_.clear();
+        return true;
+    }
 
-bool ConfigItemRef::ToBool() const {
-  bool value = false;
-  if (auto item = As<ConfigValue>(GetItem())) {
-    item->GetBool(&value);
-  }
-  return value;
-}
+    ConfigMap::Iterator ConfigMap::begin()
+    {
+        return map_.begin();
+    }
 
-int ConfigItemRef::ToInt() const {
-  int value = 0;
-  if (auto item = As<ConfigValue>(GetItem())) {
-    item->GetInt(&value);
-  }
-  return value;
-}
+    ConfigMap::Iterator ConfigMap::end()
+    {
+        return map_.end();
+    }
 
-double ConfigItemRef::ToDouble() const {
-  double value = 0.0;
-  if (auto item = As<ConfigValue>(GetItem())) {
-    item->GetDouble(&value);
-  }
-  return value;
-}
+    // ConfigItemRef members
 
-string ConfigItemRef::ToString() const {
-  string value;
-  if (auto item = As<ConfigValue>(GetItem())) {
-    item->GetString(&value);
-  }
-  return value;
-}
+    bool ConfigItemRef::IsNull() const
+    {
+        auto item = GetItem();
+        return !item || item->type() == ConfigItem::kNull;
+    }
 
-an<ConfigList> ConfigItemRef::AsList() {
-  auto list = As<ConfigList>(GetItem());
-  if (!list)
-    SetItem(list = New<ConfigList>());
-  return list;
-}
+    bool ConfigItemRef::IsValue() const
+    {
+        auto item = GetItem();
+        return item && item->type() == ConfigItem::kScalar;
+    }
 
-an<ConfigMap> ConfigItemRef::AsMap() {
-  auto map = As<ConfigMap>(GetItem());
-  if (!map)
-    SetItem(map = New<ConfigMap>());
-  return map;
-}
+    bool ConfigItemRef::IsList() const
+    {
+        auto item = GetItem();
+        return item && item->type() == ConfigItem::kList;
+    }
 
-void ConfigItemRef::Clear() {
-  SetItem(nullptr);
-}
+    bool ConfigItemRef::IsMap() const
+    {
+        auto item = GetItem();
+        return item && item->type() == ConfigItem::kMap;
+    }
 
-bool ConfigItemRef::Append(an<ConfigItem> item) {
-  if (AsList()->Append(item)) {
-    set_modified();
-    return true;
-  }
-  return false;
-}
+    bool ConfigItemRef::ToBool() const
+    {
+        bool value = false;
+        if (auto item = As<ConfigValue>(GetItem()))
+        {
+            item->GetBool(&value);
+        }
+        return value;
+    }
 
-size_t ConfigItemRef::size() const {
-  auto list = As<ConfigList>(GetItem());
-  return list ? list->size() : 0;
-}
+    int ConfigItemRef::ToInt() const
+    {
+        int value = 0;
+        if (auto item = As<ConfigValue>(GetItem()))
+        {
+            item->GetInt(&value);
+        }
+        return value;
+    }
 
-bool ConfigItemRef::HasKey(const string& key) const {
-  auto map = As<ConfigMap>(GetItem());
-  return map ? map->HasKey(key) : false;
-}
+    double ConfigItemRef::ToDouble() const
+    {
+        double value = 0.0;
+        if (auto item = As<ConfigValue>(GetItem()))
+        {
+            item->GetDouble(&value);
+        }
+        return value;
+    }
 
-bool ConfigItemRef::modified() const {
-  return data_ && data_->modified();
-}
+    string ConfigItemRef::ToString() const
+    {
+        string value;
+        if (auto item = As<ConfigValue>(GetItem()))
+        {
+            item->GetString(&value);
+        }
+        return value;
+    }
 
-void ConfigItemRef::set_modified() {
-  if (data_)
-    data_->set_modified();
-}
+    an<ConfigList> ConfigItemRef::AsList()
+    {
+        auto list = As<ConfigList>(GetItem());
+        if (!list)
+            SetItem(list = New<ConfigList>());
+        return list;
+    }
 
-}  // namespace rime
+    an<ConfigMap> ConfigItemRef::AsMap()
+    {
+        auto map = As<ConfigMap>(GetItem());
+        if (!map)
+            SetItem(map = New<ConfigMap>());
+        return map;
+    }
+
+    void ConfigItemRef::Clear()
+    {
+        SetItem(nullptr);
+    }
+
+    bool ConfigItemRef::Append(an<ConfigItem> item)
+    {
+        if (AsList()->Append(item))
+        {
+            set_modified();
+            return true;
+        }
+        return false;
+    }
+
+    size_t ConfigItemRef::size() const
+    {
+        auto list = As<ConfigList>(GetItem());
+        return list ? list->size() : 0;
+    }
+
+    bool ConfigItemRef::HasKey(const string &key) const
+    {
+        auto map = As<ConfigMap>(GetItem());
+        return map ? map->HasKey(key) : false;
+    }
+
+    bool ConfigItemRef::modified() const
+    {
+        return data_ && data_->modified();
+    }
+
+    void ConfigItemRef::set_modified()
+    {
+        if (data_)
+            data_->set_modified();
+    }
+
+} // namespace rime

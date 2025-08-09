@@ -1,5 +1,5 @@
 #include <fstream>
-#include <boost/filesystem.hpp>
+// #include <boost/filesystem.hpp>
 #include <gtest/gtest.h>
 #include <rime/resource.h>
 

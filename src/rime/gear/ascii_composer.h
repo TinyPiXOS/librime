@@ -11,50 +11,58 @@
 #include <rime/common.h>
 #include <rime/component.h>
 #include <rime/processor.h>
+#include <Utils/tpSignalSlot.h>
 
-namespace rime {
+namespace rime
+{
 
-class Context;
-class Schema;
+    class Context;
+    class Schema;
 
-enum AsciiModeSwitchStyle {
-  kAsciiModeSwitchNoop,
-  kAsciiModeSwitchInline,
-  kAsciiModeSwitchCommitText,
-  kAsciiModeSwitchCommitCode,
-  kAsciiModeSwitchClear,
-};
+    enum AsciiModeSwitchStyle
+    {
+        kAsciiModeSwitchNoop,
+        kAsciiModeSwitchInline,
+        kAsciiModeSwitchCommitText,
+        kAsciiModeSwitchCommitCode,
+        kAsciiModeSwitchClear,
+    };
 
-using AsciiModeSwitchKeyBindings = map<int /* keycode */,
-                                            AsciiModeSwitchStyle>;
+    using AsciiModeSwitchKeyBindings = map<int /* keycode */,
+                                           AsciiModeSwitchStyle>;
 
-class AsciiComposer : public Processor {
- public:
-  AsciiComposer(const Ticket& ticket);
-  ~AsciiComposer();
+    class AsciiComposer : public Processor
+    {
+    public:
+        AsciiComposer(const Ticket &ticket);
+        ~AsciiComposer();
 
-  virtual ProcessResult ProcessKeyEvent(const KeyEvent& key_event);
+        virtual ProcessResult ProcessKeyEvent(const KeyEvent &key_event);
 
- protected:
-  ProcessResult ProcessCapsLock(const KeyEvent& key_event);
-  void LoadConfig(Schema* schema);
-  bool ToggleAsciiModeWithKey(int key_code);
-  void SwitchAsciiMode(bool ascii_mode, AsciiModeSwitchStyle style);
-  void OnContextUpdate(Context* ctx);
+    public
+    signals:
+        declare_signal(Connection);
 
-  // config options
-  AsciiModeSwitchKeyBindings bindings_;
-  AsciiModeSwitchStyle caps_lock_switch_style_ = kAsciiModeSwitchNoop;
-  bool good_old_caps_lock_ = false;
-  // state
-  bool toggle_with_caps_ = false;
-  bool shift_key_pressed_ = false;
-  bool ctrl_key_pressed_ = false;
-  using TimePoint = std::chrono::steady_clock::time_point;
-  TimePoint toggle_expired_;
-  connection connection_;
-};
+    protected:
+        ProcessResult ProcessCapsLock(const KeyEvent &key_event);
+        void LoadConfig(Schema *schema);
+        bool ToggleAsciiModeWithKey(int key_code);
+        void SwitchAsciiMode(bool ascii_mode, AsciiModeSwitchStyle style);
+        void OnContextUpdate(Context *ctx);
 
-}  // namespace rime
+        // config options
+        AsciiModeSwitchKeyBindings bindings_;
+        AsciiModeSwitchStyle caps_lock_switch_style_ = kAsciiModeSwitchNoop;
+        bool good_old_caps_lock_ = false;
+        // state
+        bool toggle_with_caps_ = false;
+        bool shift_key_pressed_ = false;
+        bool ctrl_key_pressed_ = false;
+        using TimePoint = std::chrono::steady_clock::time_point;
+        TimePoint toggle_expired_;
+        LambdaConnectionManager::ConnectionID connection_;
+    };
 
-#endif  // RIME_ASCII_COMPOSER_H_
+} // namespace rime
+
+#endif // RIME_ASCII_COMPOSER_H_

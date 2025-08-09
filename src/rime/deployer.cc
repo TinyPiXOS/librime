@@ -6,139 +6,194 @@
 //
 #include <chrono>
 #include <utility>
-#include <boost/filesystem.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
+// #include <boost/filesystem.hpp>
+// #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <rime/deployer.h>
 
-namespace rime {
+#include <algorithm>
+#include <dirent.h>
 
-Deployer::Deployer() : shared_data_dir("."),
-                       user_data_dir("."),
-                       sync_dir("sync"),
-                       user_id("unknown") {
-}
+namespace rime
+{
 
-Deployer::~Deployer() {
-  JoinWorkThread();
-}
-
-string Deployer::user_data_sync_dir() const {
-  boost::filesystem::path p(sync_dir);
-  p /= user_id;
-  return p.string();
-}
-
-bool Deployer::RunTask(const string& task_name, TaskInitializer arg) {
-  auto c = DeploymentTask::Require(task_name);
-  if (!c) {
-    LOG(ERROR) << "unknown deployment task: " << task_name;
-    return false;
-  }
-  the<DeploymentTask> t(c->Create(arg));
-  if (!t) {
-    LOG(ERROR) << "error creating deployment task: " << task_name;
-    return false;
-  }
-  return t->Run(this);
-}
-
-bool Deployer::ScheduleTask(const string& task_name, TaskInitializer arg) {
-  auto c = DeploymentTask::Require(task_name);
-  if (!c) {
-    LOG(ERROR) << "unknown deployment task: " << task_name;
-    return false;
-  }
-  an<DeploymentTask> t(c->Create(arg));
-  if (!t) {
-    LOG(ERROR) << "error creating deployment task: " << task_name;
-    return false;
-  }
-  ScheduleTask(t);
-  return true;
-}
-
-void Deployer::ScheduleTask(an<DeploymentTask> task) {
-  std::lock_guard<std::mutex> lock(mutex_);
-  pending_tasks_.push(task);
-}
-
-an<DeploymentTask> Deployer::NextTask() {
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!pending_tasks_.empty()) {
-    auto result = pending_tasks_.front();
-    pending_tasks_.pop();
-    return result;
-  }
-  // there is still chance that a task is added by another thread
-  // right after this call... careful.
-  return nullptr;
-}
-
-bool Deployer::HasPendingTasks() {
-  std::lock_guard<std::mutex> lock(mutex_);
-  return !pending_tasks_.empty();
-}
-
-bool Deployer::Run() {
-  LOG(INFO) << "running deployment tasks:";
-  message_sink_("deploy", "start");
-  int success = 0;
-  int failure = 0;
-  do {
-    while (auto task = NextTask()) {
-      if (task->Run(this))
-        ++success;
-      else
-        ++failure;
-      //boost::this_thread::interruption_point();
+    Deployer::Deployer() : shared_data_dir("."),
+                           user_data_dir("."),
+                           sync_dir("sync"),
+                           user_id("unknown")
+    {
     }
-    LOG(INFO) << success + failure << " tasks ran: "
-              << success << " success, " << failure << " failure.";
-    message_sink_("deploy", !failure ? "success" : "failure");
-    // new tasks could have been enqueued while we were sending the message.
-    // before quitting, double check if there is nothing left to do.
-  }
-  while (HasPendingTasks());
-  return !failure;
-}
 
-bool Deployer::StartWork(bool maintenance_mode) {
-  if (IsWorking()) {
-    LOG(WARNING) << "a work thread is already running.";
-    return false;
-  }
-  maintenance_mode_ = maintenance_mode;
-  if (pending_tasks_.empty()) {
-    return false;
-  }
-  LOG(INFO) << "starting work thread for "
-            << pending_tasks_.size() << " tasks.";
-  work_ = std::async(std::launch::async, [this] { Run(); });
-  return work_.valid();
-}
+    Deployer::~Deployer()
+    {
+        JoinWorkThread();
+    }
 
-bool Deployer::StartMaintenance() {
-  return StartWork(true);
-}
+    string Deployer::user_data_sync_dir() const
+    {
+        // 原生路径拼接函数
+        auto join_paths = [](const std::string &base, const std::string &path)
+        {
+            // 确保基路径正确结尾
+            bool base_ends_with_sep = false;
+            if (!base.empty())
+            {
+                char last_char = base.back();
+                base_ends_with_sep = (last_char == '/');
+            }
 
-bool Deployer::IsWorking() {
-  if (!work_.valid())
-    return false;
-  auto status = work_.wait_for(std::chrono::milliseconds(0));
-  return status != std::future_status::ready;
-}
+            if (base_ends_with_sep)
+            {
+                return base + path;
+            }
+            else
+            {
+                return base + '/' + path;
+            }
+        };
 
-bool Deployer::IsMaintenanceMode() {
-  return maintenance_mode_ && IsWorking();
-}
+        return join_paths(sync_dir, user_id);
 
-void Deployer::JoinWorkThread() {
-  if (work_.valid())
-    work_.get();
-}
+        // boost::filesystem::path p(sync_dir);
+        // p /= user_id;
+        // return p.string();
+    }
 
-void Deployer::JoinMaintenanceThread() {
-  JoinWorkThread();
-}
+    bool Deployer::RunTask(const string &task_name, TaskInitializer arg)
+    {
+        auto c = DeploymentTask::Require(task_name);
+        if (!c)
+        {
+            LOG(ERROR) << "unknown deployment task: " << task_name;
+            return false;
+        }
+        the<DeploymentTask> t(c->Create(arg));
+        if (!t)
+        {
+            LOG(ERROR) << "error creating deployment task: " << task_name;
+            return false;
+        }
+        return t->Run(this);
+    }
 
-}  // namespace rime
+    bool Deployer::ScheduleTask(const string &task_name, TaskInitializer arg)
+    {
+        auto c = DeploymentTask::Require(task_name);
+        if (!c)
+        {
+            LOG(ERROR) << "unknown deployment task: " << task_name;
+            return false;
+        }
+        an<DeploymentTask> t(c->Create(arg));
+        if (!t)
+        {
+            LOG(ERROR) << "error creating deployment task: " << task_name;
+            return false;
+        }
+        ScheduleTask(t);
+        return true;
+    }
+
+    void Deployer::ScheduleTask(an<DeploymentTask> task)
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        pending_tasks_.push(task);
+    }
+
+    an<DeploymentTask> Deployer::NextTask()
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (!pending_tasks_.empty())
+        {
+            auto result = pending_tasks_.front();
+            pending_tasks_.pop();
+            return result;
+        }
+        // there is still chance that a task is added by another thread
+        // right after this call... careful.
+        return nullptr;
+    }
+
+    bool Deployer::HasPendingTasks()
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return !pending_tasks_.empty();
+    }
+
+    bool Deployer::Run()
+    {
+        LOG(INFO) << "running deployment tasks:";
+        // message_sink_("deploy", "start");
+        MessageSink.emit("deploy", "start");
+
+        int success = 0;
+        int failure = 0;
+        do
+        {
+            while (auto task = NextTask())
+            {
+                if (task->Run(this))
+                    ++success;
+                else
+                    ++failure;
+                // boost::this_thread::interruption_point();
+            }
+            LOG(INFO) << success + failure << " tasks ran: "
+                      << success << " success, " << failure << " failure.";
+            // message_sink_("deploy", !failure ? "success" : "failure");
+            MessageSink.emit("deploy", !failure ? "success" : "failure");
+
+            // new tasks could have been enqueued while we were sending the message.
+            // before quitting, double check if there is nothing left to do.
+        } while (HasPendingTasks());
+        return !failure;
+    }
+
+    bool Deployer::StartWork(bool maintenance_mode)
+    {
+        if (IsWorking())
+        {
+            LOG(WARNING) << "a work thread is already running.";
+            return false;
+        }
+        maintenance_mode_ = maintenance_mode;
+        if (pending_tasks_.empty())
+        {
+            return false;
+        }
+        LOG(INFO) << "starting work thread for "
+                  << pending_tasks_.size() << " tasks.";
+        work_ = std::async(std::launch::async, [this]
+                           { Run(); });
+        return work_.valid();
+    }
+
+    bool Deployer::StartMaintenance()
+    {
+        return StartWork(true);
+    }
+
+    bool Deployer::IsWorking()
+    {
+        if (!work_.valid())
+            return false;
+        auto status = work_.wait_for(std::chrono::milliseconds(0));
+        return status != std::future_status::ready;
+    }
+
+    bool Deployer::IsMaintenanceMode()
+    {
+        return maintenance_mode_ && IsWorking();
+    }
+
+    void Deployer::JoinWorkThread()
+    {
+        if (work_.valid())
+            work_.get();
+    }
+
+    void Deployer::JoinMaintenanceThread()
+    {
+        JoinWorkThread();
+    }
+
+} // namespace rime

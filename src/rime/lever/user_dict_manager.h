@@ -7,41 +7,46 @@
 #ifndef RIME_USER_DICT_MANAGER_H_
 #define RIME_USER_DICT_MANAGER_H_
 
-#include <boost/filesystem.hpp>
+// #include <boost/filesystem.hpp>
 #include <rime/dict/user_db.h>
 
-namespace rime {
+#include <rime/rimePath.h>
 
-class Deployer;
+namespace rime
+{
 
-using UserDictList = vector<string>;
+    class Deployer;
 
-class UserDictManager {
- public:
-  UserDictManager(Deployer* deployer);
+    using UserDictList = vector<string>;
 
-  // If component is null, the current userdb component is used.
-  void GetUserDictList(UserDictList* user_dict_list,
-                       UserDb::Component* component = nullptr);
+    class UserDictManager
+    {
+    public:
+        UserDictManager(Deployer *deployer);
 
-  // CAVEAT: the user dict should be closed before the following operations
-  bool Backup(const string& dict_name);
-  bool Restore(const string& snapshot_file);
-  bool UpgradeUserDict(const string& dict_name);
-  // returns num of exported entires, -1 denotes failure
-  int Export(const string& dict_name, const string& text_file);
-  // returns num of imported entires, -1 denotes failure
-  int Import(const string& dict_name, const string& text_file);
+        // If component is null, the current userdb component is used.
+        void GetUserDictList(UserDictList *user_dict_list,
+                             UserDb::Component *component = nullptr);
 
-  bool Synchronize(const string& dict_name);
-  bool SynchronizeAll();
+        // CAVEAT: the user dict should be closed before the following operations
+        bool Backup(const string &dict_name);
+        bool Restore(const string &snapshot_file);
+        bool UpgradeUserDict(const string &dict_name);
+        // returns num of exported entires, -1 denotes failure
+        int Export(const string &dict_name, const string &text_file);
+        // returns num of imported entires, -1 denotes failure
+        int Import(const string &dict_name, const string &text_file);
 
- protected:
-  Deployer* deployer_;
-  boost::filesystem::path path_;
-  UserDb::Component* user_db_component_;
-};
+        bool Synchronize(const string &dict_name);
+        bool SynchronizeAll();
 
-}  // namespace rime
+    protected:
+        Deployer *deployer_;
+        rime::Path path_;
+        // boost::filesystem::path path_;
+        UserDb::Component *user_db_component_;
+    };
 
-#endif  // RIME_USER_DICT_MANAGER_H_
+} // namespace rime
+
+#endif // RIME_USER_DICT_MANAGER_H_

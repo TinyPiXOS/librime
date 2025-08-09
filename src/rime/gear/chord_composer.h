@@ -13,41 +13,46 @@
 #include <rime/processor.h>
 #include <rime/algo/algebra.h>
 
-namespace rime {
+namespace rime
+{
 
-class ChordComposer : public Processor {
- public:
-  ChordComposer(const Ticket& ticket);
-  ~ChordComposer();
+    class ChordComposer : public Processor
+    {
+    public:
+        ChordComposer(const Ticket &ticket);
+        ~ChordComposer();
 
-  virtual ProcessResult ProcessKeyEvent(const KeyEvent& key_event);
+        virtual ProcessResult ProcessKeyEvent(const KeyEvent &key_event);
 
- protected:
-  ProcessResult ProcessChordingKey(const KeyEvent& key_event);
-  ProcessResult ProcessFunctionKey(const KeyEvent& key_event);
-  string SerializeChord();
-  void UpdateChord();
-  void FinishChord();
-  void ClearChord();
-  bool DeleteLastSyllable();
-  void OnContextUpdate(Context* ctx);
-  void OnUnhandledKey(Context* ctx, const KeyEvent& key);
+    protected:
+        ProcessResult ProcessChordingKey(const KeyEvent &key_event);
+        ProcessResult ProcessFunctionKey(const KeyEvent &key_event);
+        string SerializeChord();
+        void UpdateChord();
+        void FinishChord();
+        void ClearChord();
+        bool DeleteLastSyllable();
+        void OnContextUpdate(Context *ctx);
+        void OnUnhandledKey(Context *ctx, const KeyEvent &key);
 
-  KeySequence chording_keys_;
-  string delimiter_;
-  Projection algebra_;
-  Projection output_format_;
-  Projection prompt_format_;
+        KeySequence chording_keys_;
+        string delimiter_;
+        Projection algebra_;
+        Projection output_format_;
+        Projection prompt_format_;
 
-  set<int> pressed_;
-  set<int> chord_;
-  bool pass_thru_ = false;
-  bool composing_ = false;
-  string raw_sequence_;
-  connection update_connection_;
-  connection unhandled_key_connection_;
-};
+        set<int> pressed_;
+        set<int> chord_;
+        bool pass_thru_ = false;
+        bool composing_ = false;
+        string raw_sequence_;
+        // connection update_connection_;
+        // connection unhandled_key_connection_;
 
-}  // namespace rime
+        LambdaConnectionManager::ConnectionID update_connection_;
+        LambdaConnectionManager::ConnectionID unhandled_key_connection_;
+    };
 
-#endif  // RIME_CHORD_COMPOSER_H_
+} // namespace rime
+
+#endif // RIME_CHORD_COMPOSER_H_

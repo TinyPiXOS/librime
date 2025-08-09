@@ -7,42 +7,52 @@
 #ifndef RIME_SPELLER_H_
 #define RIME_SPELLER_H_
 
-#include <boost/regex.hpp>
+// #include <boost/regex.hpp>
 #include <rime/common.h>
 #include <rime/component.h>
 #include <rime/processor.h>
 
-namespace rime {
+#include <regex>
 
-class Context;
-struct Segment;
+namespace rime
+{
 
-class Speller : public Processor {
- public:
-  Speller(const Ticket& ticket);
+    class Context;
+    struct Segment;
 
-  virtual ProcessResult ProcessKeyEvent(const KeyEvent& key_event);
+    class Speller : public Processor
+    {
+    public:
+        Speller(const Ticket &ticket);
 
- protected:
-  enum AutoClearMethod { kClearNone, kClearAuto, kClearManual, kClearMaxLength };
+        virtual ProcessResult ProcessKeyEvent(const KeyEvent &key_event);
 
-  bool AutoSelectAtMaxCodeLength(Context* ctx);
-  bool AutoSelectUniqueCandidate(Context* ctx);
-  bool AutoSelectPreviousMatch(Context* ctx, Segment* previous_segment);
-  bool FindEarlierMatch(Context* ctx, size_t start, size_t end);
-  bool AutoClear(Context* ctx);
+    protected:
+        enum AutoClearMethod
+        {
+            kClearNone,
+            kClearAuto,
+            kClearManual,
+            kClearMaxLength
+        };
 
-  string alphabet_;
-  string delimiters_;
-  string initials_;
-  string finals_;
-  int max_code_length_ = 0;
-  bool auto_select_ = false;
-  bool use_space_ = false;
-  boost::regex auto_select_pattern_;
-  AutoClearMethod auto_clear_ = kClearNone;
-};
+        bool AutoSelectAtMaxCodeLength(Context *ctx);
+        bool AutoSelectUniqueCandidate(Context *ctx);
+        bool AutoSelectPreviousMatch(Context *ctx, Segment *previous_segment);
+        bool FindEarlierMatch(Context *ctx, size_t start, size_t end);
+        bool AutoClear(Context *ctx);
 
-}  // namespace rime
+        string alphabet_;
+        string delimiters_;
+        string initials_;
+        string finals_;
+        int max_code_length_ = 0;
+        bool auto_select_ = false;
+        bool use_space_ = false;
+        std::regex auto_select_pattern_;
+        AutoClearMethod auto_clear_ = kClearNone;
+    };
 
-#endif  // RIME_SPELLER_H_
+} // namespace rime
+
+#endif // RIME_SPELLER_H_

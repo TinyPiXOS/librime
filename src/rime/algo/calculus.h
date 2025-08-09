@@ -9,87 +9,98 @@
 #define RIME_CALCULUS_H_
 
 #include <stdint.h>
-#include <boost/regex.hpp>
+// #include <boost/regex.hpp>
 #include <rime_api.h>
 #include <rime/common.h>
 #include "spelling.h"
 
-namespace rime {
+#include <regex>
 
-class Calculation {
- public:
-  using Factory = Calculation* (const vector<string>& args);
+namespace rime
+{
 
-  Calculation() = default;
-  virtual ~Calculation() = default;
-  virtual bool Apply(Spelling* spelling) = 0;
-  virtual bool addition() { return true; }
-  virtual bool deletion() { return true; }
-};
+    class Calculation
+    {
+    public:
+        using Factory = Calculation *(const vector<string> &args);
 
-class Calculus {
- public:
-  RIME_API Calculus();
-  void Register(const string& token, Calculation::Factory* factory);
-  RIME_API Calculation* Parse(const string& defintion);
+        Calculation() = default;
+        virtual ~Calculation() = default;
+        virtual bool Apply(Spelling *spelling) = 0;
+        virtual bool addition() { return true; }
+        virtual bool deletion() { return true; }
+    };
 
- private:
-  map<string, Calculation::Factory*> factories_;
-};
+    class Calculus
+    {
+    public:
+        RIME_API Calculus();
+        void Register(const string &token, Calculation::Factory *factory);
+        RIME_API Calculation *Parse(const string &defintion);
 
-// xlit/zyx/abc/
-class Transliteration : public Calculation {
- public:
-  static Factory Parse;
-  bool Apply(Spelling* spelling);
+    private:
+        map<string, Calculation::Factory *> factories_;
+    };
 
- protected:
-  map<uint32_t, uint32_t> char_map_;
-};
+    // xlit/zyx/abc/
+    class Transliteration : public Calculation
+    {
+    public:
+        static Factory Parse;
+        bool Apply(Spelling *spelling);
 
-// xform/x/y/
-class Transformation : public Calculation {
- public:
-  static Factory Parse;
-  bool Apply(Spelling* spelling);
+    protected:
+        map<uint32_t, uint32_t> char_map_;
+    };
 
- protected:
-  boost::regex pattern_;
-  string replacement_;
-};
+    // xform/x/y/
+    class Transformation : public Calculation
+    {
+    public:
+        static Factory Parse;
+        bool Apply(Spelling *spelling);
 
-// erase/x/
-class Erasion : public Calculation {
- public:
-  static Factory Parse;
-  bool Apply(Spelling* spelling);
-  bool addition() { return false; }
+    protected:
+        std::regex pattern_;
+        string replacement_;
+    };
 
- protected:
-  boost::regex pattern_;
-};
+    // erase/x/
+    class Erasion : public Calculation
+    {
+    public:
+        static Factory Parse;
+        bool Apply(Spelling *spelling);
+        bool addition() { return false; }
 
-// derive/x/X/
-class Derivation : public Transformation {
- public:
-  static Factory Parse;
-  bool deletion() { return false; }
-};
+    protected:
+        std::regex pattern_;
+    };
 
-// fuzz/zyx/zx/
-class Fuzzing : public Derivation {
- public:
-  static Factory Parse;
-  bool Apply(Spelling* spelling);
-};
+    // derive/x/X/
+    class Derivation : public Transformation
+    {
+    public:
+        static Factory Parse;
+        bool deletion() { return false; }
+    };
 
-// abbrev/zyx/z/
-class Abbreviation : public Derivation {
- public:
-  static Factory Parse;
-  bool Apply(Spelling* spelling);
-};
+    // fuzz/zyx/zx/
+    class Fuzzing : public Derivation
+    {
+    public:
+        static Factory Parse;
+        bool Apply(Spelling *spelling);
+    };
 
-}  // namespace rime
+    // abbrev/zyx/z/
+    class Abbreviation : public Derivation
+    {
+    public:
+        static Factory Parse;
+        bool Apply(Spelling *spelling);
+    };
 
-#endif  // RIME_CALCULUS_H_
+} // namespace rime
+
+#endif // RIME_CALCULUS_H_

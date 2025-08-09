@@ -11,44 +11,52 @@
 #include <rime/common.h>
 #include <rime/messenger.h>
 
-namespace rime {
+namespace rime
+{
 
-class KeyEvent;
-class Schema;
-class Context;
+    class KeyEvent;
+    class Schema;
+    class Context;
 
-class Engine : public Messenger {
- public:
-  using CommitSink = signal<void (const string& commit_text)>;
+    class Engine : public Messenger
+    {
+    public
+    signals:
+        declare_signal(CommitSink, const string &);
 
-  virtual ~Engine();
-  virtual bool ProcessKey(const KeyEvent& key_event) { return false; }
-  virtual void ApplySchema(Schema* schema) {}
-  virtual void CommitText(string text) { sink_(text); }
-  virtual void Compose(Context* ctx) {}
+    public:
+        // using CommitSink = signal<void(const string &commit_text)>;
 
-  Schema* schema() const { return schema_.get(); }
-  Context* context() const { return context_.get(); }
-  CommitSink& sink() { return sink_; }
+        virtual ~Engine();
+        virtual bool ProcessKey(const KeyEvent &key_event) { return false; }
+        virtual void ApplySchema(Schema *schema) {}
+        virtual void CommitText(string text) { CommitSink.emit(text); /*sink_(text);*/ }
+        virtual void Compose(Context *ctx) {}
 
-  Engine* active_engine() {
-    return active_engine_ ? active_engine_ : this;
-  }
-  void set_active_engine(Engine* engine = nullptr) {
-    active_engine_ = engine;
-  }
+        Schema *schema() const { return schema_.get(); }
+        Context *context() const { return context_.get(); }
+        // CommitSink &sink() { return sink_; }
 
-  RIME_API static Engine* Create();
+        Engine *active_engine()
+        {
+            return active_engine_ ? active_engine_ : this;
+        }
+        void set_active_engine(Engine *engine = nullptr)
+        {
+            active_engine_ = engine;
+        }
 
- protected:
-  Engine();
+        RIME_API static Engine *Create();
 
-  the<Schema> schema_;
-  the<Context> context_;
-  CommitSink sink_;
-  Engine* active_engine_ = nullptr;
-};
+    protected:
+        Engine();
 
-}  // namespace rime
+        the<Schema> schema_;
+        the<Context> context_;
+        // CommitSink sink_;
+        Engine *active_engine_ = nullptr;
+    };
 
-#endif  // RIME_ENGINE_H_
+} // namespace rime
+
+#endif // RIME_ENGINE_H_

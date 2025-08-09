@@ -2,7 +2,9 @@
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-RIME: Rime 输入法引擎; TinyPiXOS使用librime V1.5.3版本。
+RIME: Rime 输入法引擎; 
+
+TinyPiXOS 基于 librime V1.5.3版本，移除了对boost库的依赖，使用原生C++11前版本语法及LinuxAPI代替boost。
 
 [原始仓库地址](https://github.com/rime/librime.git)
 
@@ -21,11 +23,11 @@ RIME: Rime 输入法引擎; TinyPiXOS使用librime V1.5.3版本。
 - libopencc>=1.0.2
 - libyaml-cpp>=0.5
 - libgtest (optional)
+- tinyPiXOS 信号槽 V0.1.1
 
 运行依赖
 ---
 
-- libboost
 - libglog (optional)
 - libleveldb
 - libmarisa
@@ -36,7 +38,7 @@ Linux平台构件安装librime步骤
 ---
 
 ```bash
-apt install libboost-all-dev libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
+apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
 make
 sudo make install
 ```
@@ -45,7 +47,7 @@ sudo make install
 ---
 
 ```bash
-apt install libboost-all-dev libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
+apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
 ```
 
 部署

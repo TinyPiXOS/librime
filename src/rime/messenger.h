@@ -8,20 +8,27 @@
 #define RIME_MESSENGER_H_
 
 #include <rime/common.h>
+#include <tpSignalSlot.h>
 
-namespace rime {
+namespace rime
+{
 
-class Messenger {
- public:
-  using MessageSink = signal<void (const string& message_type,
-                                   const string& message_value)>;
+    class Messenger
+    {
+    public
+    signals:
+        declare_signal(MessageSink, const string &, const string &);
 
-  MessageSink& message_sink() { return message_sink_; }
+    // public:
+    //     using MessageSink = signal<void(const string &message_type,
+    //                                     const string &message_value)>;
 
- protected:
-  MessageSink message_sink_;
-};
+    //     MessageSink &message_sink() { return message_sink_; }
 
-}  // namespace rime
+    // protected:
+    //     MessageSink message_sink_;
+    };
 
-#endif  // RIME_MESSENGER_H_
+} // namespace rime
+
+#endif // RIME_MESSENGER_H_

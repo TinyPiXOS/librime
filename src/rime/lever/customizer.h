@@ -5,28 +5,32 @@
 #ifndef RIME_CUSTOMIZER_H_
 #define RIME_CUSTOMIZER_H_
 
-#include <boost/filesystem.hpp>
+// #include <boost/filesystem.hpp>
 
-namespace rime {
+#include <rime/rimePath.h>
 
-class Customizer {
- public:
-  Customizer(const boost::filesystem::path& source_path,
-             const boost::filesystem::path& dest_path,
-             const string& version_key)
-      : source_path_(source_path),
-        dest_path_(dest_path),
-        version_key_(version_key) {}
+namespace rime
+{
 
-  // DEPRECATED: in favor of auto-patch config compiler plugin
-  bool UpdateConfigFile();
+    class Customizer
+    {
+    public:
+        Customizer(const rime::Path &source_path,
+                   const rime::Path &dest_path,
+                   const string &version_key)
+            : source_path_(source_path),
+              dest_path_(dest_path),
+              version_key_(version_key) {}
 
- protected:
-  boost::filesystem::path source_path_;
-  boost::filesystem::path dest_path_;
-  string version_key_;
-};
+        // DEPRECATED: in favor of auto-patch config compiler plugin
+        bool UpdateConfigFile();
 
-}  // namespace rime
+    protected:
+        rime::Path source_path_;
+        rime::Path dest_path_;
+        string version_key_;
+    };
 
-#endif  // RIME_CUSTOMIZER_H_
+} // namespace rime
+
+#endif // RIME_CUSTOMIZER_H_

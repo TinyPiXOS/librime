@@ -7,44 +7,50 @@
 #ifndef RIME_RECOGNIZER_H_
 #define RIME_RECOGNIZER_H_
 
-#include <boost/regex.hpp>
+// #include <boost/regex.hpp>
 #include <rime/common.h>
 #include <rime/processor.h>
 
-namespace rime {
+#include <regex>
 
-class Config;
-class Segmentation;
+namespace rime
+{
 
-struct RecognizerMatch {
-  string tag;
-  size_t start = 0, end = 0;
+    class Config;
+    class Segmentation;
 
-  RecognizerMatch() = default;
-  RecognizerMatch(const string& a_tag, size_t a_start, size_t an_end)
-      : tag(a_tag), start(a_start), end(an_end) {}
+    struct RecognizerMatch
+    {
+        string tag;
+        size_t start = 0, end = 0;
 
-  bool found() const { return start < end; }
-};
+        RecognizerMatch() = default;
+        RecognizerMatch(const string &a_tag, size_t a_start, size_t an_end)
+            : tag(a_tag), start(a_start), end(an_end) {}
 
-class RecognizerPatterns : public map<string, boost::regex> {
- public:
-  void LoadConfig(Config* config);
-  RecognizerMatch GetMatch(const string& input,
-                           const Segmentation& segmentation) const;
-};
+        bool found() const { return start < end; }
+    };
 
-class Recognizer : public Processor {
- public:
-  Recognizer(const Ticket& ticket);
+    class RecognizerPatterns : public map<string, std::regex>
+    {
+    public:
+        void LoadConfig(Config *config);
+        RecognizerMatch GetMatch(const string &input,
+                                 const Segmentation &segmentation) const;
+    };
 
-  virtual ProcessResult ProcessKeyEvent(const KeyEvent& key_event);
+    class Recognizer : public Processor
+    {
+    public:
+        Recognizer(const Ticket &ticket);
 
- protected:
-  RecognizerPatterns patterns_;
-  bool use_space_ = false;
-};
+        virtual ProcessResult ProcessKeyEvent(const KeyEvent &key_event);
 
-}  // namespace rime
+    protected:
+        RecognizerPatterns patterns_;
+        bool use_space_ = false;
+    };
 
-#endif  // RIME_RECOGNIZER_H_
+} // namespace rime
+
+#endif // RIME_RECOGNIZER_H_
