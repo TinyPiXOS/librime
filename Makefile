@@ -21,6 +21,12 @@ xcode:
 xcode/%:
 	make -f xcode.mk $(@:xcode/%=%)
 
+deps:
+	$(MAKE) -f deps.mk
+
+deps/%:
+	$(MAKE) -f deps.mk $(@:deps/%=%)
+	
 clean:
 	rm -Rf build build-static debug
 

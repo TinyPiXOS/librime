@@ -16,9 +16,9 @@ set(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_SOURCE_DIR}/install/lib CACHE PATH "库
 set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/install/include CACHE PATH "库文件目录" FORCE)
 # set(rime_data_dir "/share/rime" CACHE STRING "Rime 数据目录" FORCE)
 
-option(BUILD_SHARED_LIBS "构建为动态库" ON)
+option(BUILD_SHARED_LIBS "构建为动态库" OFF)
+option(BUILD_STATIC "Build with dependencies as static libraries" ON)
 option(BUILD_MERGED_PLUGINS "Merge plugins into one Rime library" ON)
-option(BUILD_STATIC "Build with dependencies as static libraries" OFF)
 option(BUILD_DATA "Build data for Rime" OFF)
 option(BUILD_SAMPLE "Build sample Rime plugin" OFF)
 option(BUILD_TEST "构建运行测试" OFF)
@@ -27,6 +27,9 @@ option(ENABLE_LOGGING "启用google-glog日志记录" ON)
 # option(BOOST_USE_CXX11 "Boost has been built with C++11 support" OFF)
 # option(BOOST_USE_SIGNALS2 "Boost use signals2 instead of signals" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer (Unix Only)" OFF)
+
+# 添加 -fPIC选项​
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(rime_data_dir "/share/rime-data" CACHE STRING "Target directory for Rime data")
 
