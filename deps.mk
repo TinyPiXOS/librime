@@ -42,37 +42,37 @@ glog:
 	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
 	&& cmake --build $(build) --target install
 
-googletest:
-	cd $(src_dir)/googletest; \
-	cmake . -B$(build) \
-	-DBUILD_GMOCK:BOOL=OFF \
-	-DCMAKE_BUILD_TYPE:STRING="Release" \
-	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
-	&& cmake --build $(build) --target install
+# googletest:
+# 	cd $(src_dir)/googletest; \
+# 	cmake . -B$(build) \
+# 	-DBUILD_GMOCK:BOOL=OFF \
+# 	-DCMAKE_BUILD_TYPE:STRING="Release" \
+# 	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
+# 	&& cmake --build $(build) --target install
 
-leveldb:
-	cd $(src_dir)/leveldb; \
-	cmake . -B$(build) \
-	-DLEVELDB_BUILD_BENCHMARKS:BOOL=OFF \
-	-DLEVELDB_BUILD_TESTS:BOOL=OFF \
-	-DCMAKE_BUILD_TYPE:STRING="Release" \
-	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
-	&& cmake --build $(build) --target install
+# leveldb:
+# 	cd $(src_dir)/leveldb; \
+# 	cmake . -B$(build) \
+# 	-DLEVELDB_BUILD_BENCHMARKS:BOOL=OFF \
+# 	-DLEVELDB_BUILD_TESTS:BOOL=OFF \
+# 	-DCMAKE_BUILD_TYPE:STRING="Release" \
+# 	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
+# 	&& cmake --build $(build) --target install
 
-marisa-trie:
-	cd $(src_dir)/marisa-trie; \
-	cmake . -B$(build) \
-	-DCMAKE_BUILD_TYPE:STRING="Release" \
-	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
-	&& cmake --build $(build) --target install
+# marisa-trie:
+# 	cd $(src_dir)/marisa-trie; \
+# 	cmake . -B$(build) \
+# 	-DCMAKE_BUILD_TYPE:STRING="Release" \
+# 	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
+# 	&& cmake --build $(build) --target install
 
-opencc:
-	cd $(src_dir)/opencc; \
-	cmake . -B$(build) \
-	-DBUILD_SHARED_LIBS:BOOL=OFF \
-	-DCMAKE_BUILD_TYPE:STRING="Release" \
-	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
-	&& cmake --build $(build) --target install
+# opencc:
+# 	cd $(src_dir)/opencc; \
+# 	cmake . -B$(build) \
+# 	-DBUILD_SHARED_LIBS:BOOL=OFF \
+# 	-DCMAKE_BUILD_TYPE:STRING="Release" \
+# 	-DCMAKE_INSTALL_PREFIX:PATH="$(prefix)" \
+# 	&& cmake --build $(build) --target install
 
 yaml-cpp:
 	cd $(src_dir)/yaml-cpp; \

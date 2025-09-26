@@ -16,38 +16,30 @@ TinyPiXOS 基于 librime V1.5.3版本，移除了对boost库的依赖，使用�
 
 - compiler with C++11 support
 - cmake>=2.8
-- libboost>=1.48
 - libglog (optional)
 - libleveldb
 - libmarisa
 - libopencc>=1.0.2
 - libyaml-cpp>=0.5
-- libgtest (optional)
-- tinyPiXOS 信号槽 V0.1.1
+- tinyPiXOS 信号槽 V0.1.1 (同步信号槽版本)
 
-运行依赖
+Linux平台构建安装librime步骤
 ---
 
-- libglog (optional)
-- libleveldb
-- libmarisa
-- libopencc
-- libyaml-cpp
-
-Linux平台构件安装librime步骤
----
+构建rime静态库
 
 ```bash
 apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
-make
-sudo make install
-```
+cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/gcc -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ --no-warn-unused-cli -B ./build -G Ninja
+cmake --build build
+cmake --build build --target install
+ ```
 
-使用librime安装依赖
----
+构建依赖库静态库
 
 ```bash
-apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
+git submodule update --init --recursive
+make deps
 ```
 
 部署
@@ -56,6 +48,6 @@ apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle
 TARGET_PATH = tinyPiXCore/src
 
 - 拷贝install目录下include/* -> TARGET_PATH/include_p/Utils/rime
-- 拷贝install目录下lib/librime.so.1.5.3 -> TARGET_PATH/depend_lib/dynamic/x86_x64或者arm_64
+- 拷贝install目录下lib/*.a  -> TARGET_PATH/depend_lib/static/x86_x64或者arm_64
 - 拷贝install目录下data/* -> TARGET_PATH/data/rime
 - 第一次部署需要在data目录下执行 ./rime_deployer --build
