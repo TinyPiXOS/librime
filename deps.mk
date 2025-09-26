@@ -1,14 +1,15 @@
 # a minimal build of third party libraries for static linking
 
 rime_root = $(CURDIR)
-src_dir = $(rime_root)/deps
+# src_dir = $(rime_root)/deps
+src_dir = $(rime_root)/thirdparty/src
 
 ifndef NOPARALLEL
 export MAKEFLAGS+=" -j$$(( $$(nproc 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || getconf NPROCESSORS_ONLN 2>/dev/null || echo 8) + 1)) "
 endif
 
 build ?= build
-prefix ?= $(rime_root)
+prefix ?= $(rime_root)/install
 
 rime_deps = glog googletest leveldb marisa-trie opencc yaml-cpp
 
