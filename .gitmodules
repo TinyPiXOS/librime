@@ -10,6 +10,3 @@
 [submodule "thirdparty/src/opencc"]
 	path = thirdparty/src/opencc
 	url = https://gitee.com/mirrors/opencc.git
-[submodule "thirdparty/src/Leveldb_old1"]
-	path = thirdparty/src/Leveldb_old1
-	url = https://gitee.com/tinypixos/Leveldb_old1.git
