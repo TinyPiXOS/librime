@@ -4,12 +4,12 @@
 [submodule "thirdparty/src/yaml-cpp"]
 	path = thirdparty/src/yaml-cpp
 	url = https://gitee.com/mirrors/yaml-cpp.git
-[submodule "thirdparty/src/Leveldb_old1"]
-	path = thirdparty/src/Leveldb_old1
-	url = https://gitee.com/tinypixos/Leveldb_old1.git
 [submodule "thirdparty/src/opencc"]
 	path = thirdparty/src/opencc
 	url = https://gitee.com/mirrors/opencc.git
 [submodule "thirdparty/src/marisa-trie"]
 	path = thirdparty/src/marisa-trie
 	url = https://gitee.com/mirrors/marisa-trie.git
+[submodule "thirdparty/src/leveldb"]
+	path = thirdparty/src/leveldb
+	url = https://gitee.com/tinypixos/leveldb.git
