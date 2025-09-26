@@ -4,6 +4,3 @@
 [submodule "thirdparty/src/yaml-cpp"]
 	path = thirdparty/src/yaml-cpp
 	url = https://gitee.com/mirrors/yaml-cpp.git
-[submodule "thirdparty/src/marisa-trie"]
-	path = thirdparty/src/marisa-trie
-	url = https://gitee.com/mirrors/marisa-trie.git
