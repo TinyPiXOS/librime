@@ -16,8 +16,8 @@ set(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_SOURCE_DIR}/install/lib CACHE PATH "库
 set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/install/include CACHE PATH "库文件目录" FORCE)
 # set(rime_data_dir "/share/rime" CACHE STRING "Rime 数据目录" FORCE)
 
-option(BUILD_SHARED_LIBS "构建为动态库" OFF)
-option(BUILD_STATIC "Build with dependencies as static libraries" ON)
+option(BUILD_SHARED_LIBS "构建为动态库" ON)
+option(BUILD_STATIC "Build with dependencies as static libraries" OFF)
 option(BUILD_MERGED_PLUGINS "Merge plugins into one Rime library" ON)
 option(BUILD_DATA "Build data for Rime" ON)
 option(BUILD_SAMPLE "Build sample Rime plugin" OFF)
