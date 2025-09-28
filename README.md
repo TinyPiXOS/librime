@@ -26,11 +26,11 @@ TinyPiXOS 基于 librime V1.5.3版本，移除了对boost库的依赖，使用�
 Linux平台构建安装librime步骤
 ---
 
-构建rime静态库
+构建rime动态库
 
 ```bash
 apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
-cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/gcc -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++ --no-warn-unused-cli -B ./build -G Ninja
+cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE --no-warn-unused-cli -B ./build -G Ninja
 cmake --build build
 cmake --build build --target install
  ```

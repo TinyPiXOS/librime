@@ -13,7 +13,7 @@ env.bat
 node_modules/
 *~
 .*.swp
-
+install/
 install/include
 install/lib
 install/share
