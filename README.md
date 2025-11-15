@@ -30,7 +30,13 @@ Linux平台构建安装librime步骤
 
 ```bash
 apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
-cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE --no-warn-unused-cli -B ./build -G Ninja
+cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE --no-warn-unused-cli -B ./build -G Ninja  \
+ -DCMAKE_INSTALL_PREFIX:PATH="$(pwd)/install" \
+ -DCMAKE_INSTALL_BINDIR:PATH="$(pwd)/install/bin" \
+ -DCMAKE_INSTALL_LIBDIR:PATH="$(pwd)/install/lib" \
+ -DCMAKE_INSTALL_INCLUDEDIR:PATH="$(pwd)/install/include" \
+ -DEXECUTABLE_OUTPUT_PATH:PATH="$(pwd)/install/data" 
+
 cmake --build build
 cmake --build build --target install
  ```
