@@ -7,6 +7,8 @@
 #include <fstream>
 // #include <boost/algorithm/string.hpp>
 #include <rime/algo/utilities.h>
+#include <iosfwd>
+#include <sstream>
 
 namespace rime
 {

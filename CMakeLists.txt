@@ -11,6 +11,29 @@ add_definitions(-DRIME_VERSION="${rime_version}")
 
 include(GNUInstallDirs)
 
+if(ARM_SDK_PATH)
+    message(STATUS "交叉编译构建：SDK_PATH: ${ARM_SDK_PATH}")
+
+    message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
+    message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+
+    set(CMAKE_SYSTEM_NAME Linux)  
+    set(CMAKE_SYSTEM_PROCESSOR arm)  
+    
+    # 指定交叉编译器  
+    # set(CMAKE_C_COMPILER arm-linux-gnueabihf-gcc)  
+    # set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
+    
+    # 设置查找路径  
+    set(CMAKE_FIND_ROOT_PATH ${ARM_SDK_PATH})
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)  
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)  
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+    # 添加这行以确保 CMake 能找到依赖  
+    set(CMAKE_PREFIX_PATH ${ARM_SDK_PATH})
+endif()
+
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "安装根目录" )
 set(CMAKE_INSTALL_BINDIR ${CMAKE_CURRENT_SOURCE_DIR}/install/bin CACHE PATH "可执行文件目录")
 set(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_SOURCE_DIR}/install/lib CACHE PATH "库文件目录" )
@@ -26,7 +49,7 @@ option(BUILD_DATA "Build data for Rime" OFF)
 option(BUILD_SAMPLE "Build sample Rime plugin" OFF)
 option(BUILD_TEST "构建运行测试" OFF)
 option(BUILD_SEPARATE_LIBS "Build separate rime-* libraries" OFF)
-option(ENABLE_LOGGING "启用google-glog日志记录" ON)
+option(ENABLE_LOGGING "启用google-glog日志记录" OFF)
 # option(BOOST_USE_CXX11 "Boost has been built with C++11 support" OFF)
 # option(BOOST_USE_SIGNALS2 "Boost use signals2 instead of signals" ON)
 option(ENABLE_ASAN "Enable Address Sanitizer (Unix Only)" OFF)
@@ -56,29 +79,6 @@ set(LevelDb_STATIC ${BUILD_STATIC})
 set(Marisa_STATIC ${BUILD_STATIC})
 set(Opencc_STATIC ${BUILD_STATIC})
 set(YamlCpp_STATIC ${BUILD_STATIC})
-
-# set(Boost_USE_MULTITHREADED ON)
-# if(MSVC)
-#   set(Boost_USE_STATIC_RUNTIME ON)
-# endif()
-
-# if(NOT BOOST_USE_CXX11)
-#   add_definitions("-DBOOST_NO_CXX11_SCOPED_ENUMS")
-# endif()
-
-# set(BOOST_COMPONENTS filesystem regex system)
-
-# if(BOOST_USE_SIGNALS2)
-#   add_definitions("-DBOOST_SIGNALS2")
-# else()
-#   set(BOOST_COMPONENTS ${BOOST_COMPONENTS} signals)
-# endif()
-
-# find_package(Boost 1.46.0 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
-# if(Boost_FOUND)
-#   include_directories(${Boost_INCLUDE_DIRS})
-#   link_directories(${Boost_LIBRARY_DIRS})
-# endif()
 
 if(ENABLE_LOGGING)
 
@@ -116,6 +116,14 @@ if(YamlCpp_FOUND)
   include_directories(${YamlCpp_INCLUDE_PATH})
 endif()
 
+# find_library(YamlCpp
+#     NAMES yaml-cpp
+#     PATHS ${CMAKE_FIND_ROOT_PATH}/lib
+#     PATH_SUFFIXES ${LOAD_PATH_SUFFIX}
+#     NO_DEFAULT_PATH
+#     NO_CMAKE_FIND_ROOT_PATH
+# )
+
 find_package(LevelDb REQUIRED)
 if(LevelDb_FOUND)
     include_directories(${LevelDb_INCLUDE_PATH})
@@ -133,14 +141,6 @@ endif()
 if(Opencc_STATIC)
   add_definitions(-DOpencc_BUILT_AS_STATIC)
 endif()
-
-# find_path(X11Keysym X11/keysym.h)
-# if(X11Keysym)
-#   message(STATUS "Found X11/keysym.h at ${X11Keysym}")
-#   include_directories(${X11Keysym})
-# else()
-#   message(WARNING "X11/keysym.h not found.")
-# endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/src/include/Utils)

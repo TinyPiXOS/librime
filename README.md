@@ -30,12 +30,34 @@ Linux平台构建安装librime步骤
 
 ```bash
 apt install libleveldb-dev libmarisa-dev libopencc-dev libyaml-cpp-dev libgoogle-glog-dev
+
 cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE --no-warn-unused-cli -B ./build -G Ninja  \
  -DCMAKE_INSTALL_PREFIX:PATH="$(pwd)/install" \
  -DCMAKE_INSTALL_BINDIR:PATH="$(pwd)/install/bin" \
  -DCMAKE_INSTALL_LIBDIR:PATH="$(pwd)/install/lib" \
  -DCMAKE_INSTALL_INCLUDEDIR:PATH="$(pwd)/install/include" \
  -DEXECUTABLE_OUTPUT_PATH:PATH="$(pwd)/install/data" 
+
+# 交叉编译
+cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE --no-warn-unused-cli -B ./build -G Ninja  \
+ -DCMAKE_INSTALL_PREFIX:PATH="$(pwd)/install" \
+ -DCMAKE_INSTALL_BINDIR:PATH="$(pwd)/install/bin" \
+ -DCMAKE_INSTALL_LIBDIR:PATH="$(pwd)/install/lib" \
+ -DCMAKE_INSTALL_INCLUDEDIR:PATH="$(pwd)/install/include" \
+ -DEXECUTABLE_OUTPUT_PATH:PATH="$(pwd)/install/data" \
+ -DCMAKE_C_COMPILER=/your/custom/path/arm-linux-gnueabihf-gcc \
+ -DCMAKE_CXX_COMPILER=/your/custom/path/arm-linux-gnueabihf-g++ \
+ -DARM_SDK_PATH=/your/sdk/path
+
+ cmake -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE --no-warn-unused-cli -B ./build -G Ninja  \
+ -DCMAKE_INSTALL_PREFIX:PATH="$(pwd)/install" \
+ -DCMAKE_INSTALL_BINDIR:PATH="$(pwd)/install/bin" \
+ -DCMAKE_INSTALL_LIBDIR:PATH="$(pwd)/install/lib" \
+ -DCMAKE_INSTALL_INCLUDEDIR:PATH="$(pwd)/install/include" \
+ -DEXECUTABLE_OUTPUT_PATH:PATH="$(pwd)/install/data" \
+ -DCMAKE_C_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc \
+ -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++ \
+ -DARM_SDK_PATH=/home/hawk/Public/arm_32
 
 cmake --build build
 cmake --build build --target install
