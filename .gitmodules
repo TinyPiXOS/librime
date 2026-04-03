@@ -1,15 +1,15 @@
 [submodule "thirdparty/src/glog"]
 	path = thirdparty/src/glog
-	url = https://gitee.com/mirrors/glog.git
+	url = https://gitee.com/tinypixos/glog.git
 [submodule "thirdparty/src/yaml-cpp"]
 	path = thirdparty/src/yaml-cpp
-	url = https://gitee.com/mirrors/yaml-cpp.git
+	url = https://gitee.com/tinypixos/yaml-cpp.git
 [submodule "thirdparty/src/opencc"]
 	path = thirdparty/src/opencc
-	url = https://gitee.com/mirrors/opencc.git
+	url = https://gitee.com/tinypixos/opencc.git
 [submodule "thirdparty/src/marisa-trie"]
 	path = thirdparty/src/marisa-trie
-	url = https://gitee.com/mirrors/marisa-trie.git
+	url = https://gitee.com/tinypixos/marisa-trie.git
 [submodule "thirdparty/src/leveldb"]
 	path = thirdparty/src/leveldb
 	url = https://gitee.com/tinypixos/leveldb.git
